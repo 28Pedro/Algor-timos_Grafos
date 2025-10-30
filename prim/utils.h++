@@ -1,5 +1,5 @@
-#ifndef AUX_H
-#define AUX_H
+#ifndef UTILS_H
+#define UTILS_H
 
     #include <vector>
     #include <string>
@@ -24,6 +24,6 @@
     void redirect_solution(const char *f_name, cost_prev* solu, int size, int init_vertex, bool show_tree);
     void show_help();
     int nextInt(char *&p);
-    void show_graph(vector<vector<pair<int,int>>> gph); // debug
+    //void show_graph(vector<vector<pair<int,int>>> gph); // debug
 
 #endif
