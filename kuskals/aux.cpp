@@ -1,6 +1,6 @@
 #include "utils.h++"
 
-int nextInt(char *&p)
+ int nextInt(char *&p)
 {
     while (*p && (*p < '0' || *p > '9') && *p != '-')
     {
@@ -25,9 +25,9 @@ int nextInt(char *&p)
     return x * sign;
 }
 
-int read_W_graph(const char* fname, vector<vector<pair<int,int>>>& graph)
+int read_W_graph(const char* f_name, vector<edge>& graph)
 {
-    FILE* f = fopen(fname, "rb");
+    FILE* f = fopen(f_name, "rb");
 
     if (!f)
     {
@@ -47,63 +47,53 @@ int read_W_graph(const char* fname, vector<vector<pair<int,int>>>& graph)
 
     int vertex = nextInt(p);
     int edje = nextInt(p);
+    
+    graph.reserve(edje);
 
-    graph.resize(vertex);
+    for(int i = 0; i < edje; i++)
+    {
+        int v1 = nextInt(p) - 1; 
+        int v2 = nextInt(p) - 1;  
+        int w = nextInt(p);
 
-    for (auto &adj : graph)
-        adj.reserve(edje / vertex * 2);
-
-    for (int i = 0; i < edje; i++) {
-
-        int v1 = nextInt(p) - 1;
-        int v2 = nextInt(p) - 1;
-        int w  = nextInt(p);
-
-        graph[v1].push_back({w, v2});
-        graph[v2].push_back({w, v1});
+        graph.push_back(edge(v1,v2,w));
     }
 
     free(buffer);
 
-    return edje;
+    return vertex;
 }
 
-void print_solution(cost_prev* solu, int size, int init_vertex, bool show_tree)
+void print_solution(edge * solu, int size, bool show_tree)
  {
+    
     if(!show_tree){
 
         long cost_total = 0;
         
         for(int i = 0; i < size; i++)
         {
-            cost_total += solu[i].cost; 
+            cost_total += solu[i].wheight; 
         }
 
         printf("%ld\n",cost_total);
-
-        return;
 
     }else{
         
         for(int i = 0; i < size; i++)
         {
-            if(i == init_vertex){
-                continue;
-            }
-
-            printf("(%d,%d) ",solu[i].prev + 1,i+1);  
-            
+            printf("(%d,%d) ", solu[i].v + 1, solu[i].u + 1);
         }
 
-        printf("\n");
+       printf("\n");
     }
   
  }
 
-void redirect_solution(const char *f_name, cost_prev* solu, int size, int init_vertex, bool show_tree)
+void redirect_solution(const char *f_name, edge* solu, int size, bool show_tree)
 {
     FILE *file = fopen(f_name, "w");
-
+   
     if(!file)
     {
        perror("ERRO AO ABRIR/CRIAR ARQUIVO");
@@ -115,7 +105,7 @@ void redirect_solution(const char *f_name, cost_prev* solu, int size, int init_v
 
     for(int i = 0; i < size; i++)
     {
-        cost_total += solu[i].cost; 
+        cost_total += solu[i].wheight; 
     }
 
     fprintf(file,"%ld \n",cost_total);
@@ -124,40 +114,45 @@ void redirect_solution(const char *f_name, cost_prev* solu, int size, int init_v
 
         for(int i = 0; i < size; i++)
         {
-            if(i == init_vertex){
-                continue;
-            }
-
-            fprintf(file, "(%d,%d) ", solu[i].prev + 1, i + 1);
+            fprintf(file, "(%d,%d) ", solu[i].v + 1, solu[i].u + 1);
         }
     }
 
     fclose(file);
-    
+   
 }
-
 void show_help()
 {
     printf("Parâmetros:\n");
     printf(" -h     Mostra essa mensagem de ajuda\n");
     printf(" -f     Especifica o arquivo de entrada do grafo ponderado\n");
     printf(" -o     Redireciona a saída para um arquivo\n");
-    printf(" -s     Mostra a solução na saída padrão\n");
-    printf(" -i     Especifica o vértice inicial\n");
+    printf(" -s     Mostra os vertices da árvore na saída padrão\n");
     printf("\n");
 }
 
+// funções de classes e structs
+edge::edge() = default;
+edge::edge(int _u, int _v, int _wheight) : u(_u), v(_v), wheight(_wheight) {}
+edge& edge::operator=(const edge& other) {
+
+    if (this != &other) { 
+        u = other.u;
+        v = other.v;
+        wheight = other.wheight;
+    }
+
+    return *this;
+    }
+
 // função de debug
 
-// void show_graph(vector<vector<pair<int,int>>> gph)
+// void show_graph(vector<edge>& gph)
 // {
 //     for(int i = 0; i < gph.size(); i++)
 //     {
-//         for(auto &p : gph[i])
-//         {
-//             cout << "(" << i+1 << "," << p.second + 1<< "," << p.first
-//             << ")";
-//         }
+//         cout << "(" << gph[i].u << "," << gph[i].v << "," << gph[i].wheight << 
+//         ")" << endl;
 //     }
 
 //     cout << endl;
